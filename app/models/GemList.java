@@ -2,11 +2,15 @@ package models;
 
 import java.util.ArrayList;
 
+import edu.uprm.ece.icom4035.list.SortedCircularDoublyLinkedList;
+
 public class GemList {
-	private ArrayList<Gem> gemList;
+	private SortedCircularDoublyLinkedList<Gem> gemList;
 	int counter = 1;
 	private GemList(){
-		this.gemList = new ArrayList<Gem>(10);
+		this.gemList = new SortedCircularDoublyLinkedList<Gem>();
+		this.gemList.add(new Gem("D", 14, 110.0, 7, "#CC", 16,(long) 1));
+		
 	}
 	public Gem addGem(Gem obj){
 		long id = this.counter++;
@@ -78,5 +82,15 @@ public class GemList {
 	private static GemList singleton = new GemList();
 	public static GemList getInstance(){
 		return singleton;
+	}
+	
+	public String printList()
+	{
+		 String result="";
+		 while(!this.gemList.isEmpty())
+		 {
+			 result = result + "" + this.gemList;
+		 }
+		return result;
 	}
 }

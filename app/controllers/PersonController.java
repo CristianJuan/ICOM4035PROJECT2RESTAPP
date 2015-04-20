@@ -47,6 +47,7 @@ public class PersonController extends Controller {
 		}
 	}
 	
+	
 	@BodyParser.Of(BodyParser.Json.class)
 	public static Result storePerson(){
 		ObjectMapper mapper = new ObjectMapper();
@@ -57,8 +58,8 @@ public class PersonController extends Controller {
 			 Person newPerson = mapper.readValue(json.toString(), Person.class);
 			 PersonList theList = PersonList.getInstance(); 
 			 newPerson = theList.addPerson(newPerson);
-			 ObjectNode result = Json.newObject();
-			 result.put("Person", Json.toJson(newPerson));
+			 JsonNode result = Json.toJson(newPerson);
+			
 			 return created(result);
 		 }
 		 catch(Exception e){

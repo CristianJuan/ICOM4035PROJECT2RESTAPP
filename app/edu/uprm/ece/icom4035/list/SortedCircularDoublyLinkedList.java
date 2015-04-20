@@ -4,7 +4,13 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class SortedCircularDoublyLinkedList<E extends Comparable<E>> implements SortedList<E> {
-	//Private Classes//
+	
+	
+	/**
+	 * Private classes
+	 * 
+	 *
+	 */
 	private class Node {
 		private E value;
 		private Node next;
@@ -30,6 +36,11 @@ public class SortedCircularDoublyLinkedList<E extends Comparable<E>> implements 
 		}
 	}
 
+	/**
+	 * Private class for a FW iterator
+	 * 
+	 *
+	 */
 	private class ListIterator implements Iterator<E>{
 		private Node nextNode;
 
@@ -38,7 +49,7 @@ public class SortedCircularDoublyLinkedList<E extends Comparable<E>> implements 
 		}
 
 		public ListIterator(int index){
-			if((index < 0) || (index>currentsize))
+			if((index < 0) || (index>currentSize))
 				throw new IndexOutOfBoundsException();
 
 			int counter = 0;
@@ -71,7 +82,11 @@ public class SortedCircularDoublyLinkedList<E extends Comparable<E>> implements 
 
 		}	
 	}
-
+	/**
+	 * Private class for a BW iterator
+	 * 
+	 *
+	 */
 	private class ReverseListIterator implements ReverseIterator<E>{
 		private Node prevNode;
 
@@ -80,10 +95,10 @@ public class SortedCircularDoublyLinkedList<E extends Comparable<E>> implements 
 		}
 
 		public ReverseListIterator(int index){
-			int counter = currentsize;
+			int counter = currentSize;
 			Node temp;
 
-			for(temp = header.getPrev(); counter > currentsize-index; temp = temp.getPrev(), counter--);
+			for(temp = header.getPrev(); counter > currentSize-index; temp = temp.getPrev(), counter--);
 			this.prevNode = temp;
 		}
 
@@ -106,48 +121,38 @@ public class SortedCircularDoublyLinkedList<E extends Comparable<E>> implements 
 		}
 
 	}
-	//END OF PRIVATE CLASSES
+	////////////END OF PRIVATE CLASSES
 	
-	private int currentsize;
-	private Node header;
-	//Constructor
+	
+	Node header;
+	int currentSize;
+
+	
 	public SortedCircularDoublyLinkedList(){
 		header = new Node();
 		header.setValue(null);
 		header.setNext(header);
 		header.setPrev(header);
-		this.currentsize = 0;
+		currentSize = 0;
 	}
 
-	
+	//Iterator Method 
 	@Override
 	public Iterator<E> iterator() {
 		return new ListIterator();
 	}
 
-	@Override
-	public Iterator<E> iterator(int index) {
-		return new ListIterator(index);
-	}
-
-	@Override
-	public ReverseIterator<E> reverseIterator() {
-		return new ReverseListIterator();
-	}
-
-	@Override
-	public ReverseIterator<E> reverseIterator(int index) {
-		return new ReverseListIterator(index);
-	}
 	/**Add method
 	 * @param obj element to be added to the SCDLL
 	 */
 	@Override
 	public boolean add(E obj) {
+		
 		if(obj == null)
-			throw new IllegalArgumentException("Will/Cannot not add null argument.");
+			throw new IllegalArgumentException("Argument cannot be null.");
 
-		boolean elementisAdded = false; 
+		boolean elementisadded = false; 
+
 		for(Node temp = header.getNext();temp.getValue()!= null; temp=temp.getNext()){
 			if(obj.compareTo(temp.getValue()) < 0){
 				if(temp.getPrev().getValue() == (header.getValue())){
@@ -157,8 +162,8 @@ public class SortedCircularDoublyLinkedList<E extends Comparable<E>> implements 
 					temp2.setPrev(header);
 					header.setNext(temp2);
 					temp.setPrev(temp2);
-					elementisAdded=true;
-					currentsize++;
+					elementisadded=true;
+					currentSize++;
 					break;
 				}
 
@@ -169,88 +174,82 @@ public class SortedCircularDoublyLinkedList<E extends Comparable<E>> implements 
 					temp2.setPrev(temp.getPrev());
 					temp.getPrev().setNext(temp2);
 					temp.setPrev(temp2);
-					elementisAdded=true;
-					currentsize++;
+					elementisadded=true;
+					currentSize++;
 					break;
 				}
 			}
 		}
 
-		if(elementisAdded == false){
+		if(elementisadded == false){
 			Node temp = new Node();
 			temp.setValue(obj);
 			temp.setNext(header);
 			temp.setPrev(header.getPrev());
 			header.getPrev().setNext(temp);
 			header.setPrev(temp);
-			elementisAdded=true;
-			currentsize++;
+			elementisadded=true;
+			currentSize++;
 		}
-		return elementisAdded;
+		return elementisadded;
 	}
-	/** Remove method to remove an obj from the list at its first copy of obj
-	 * @return boolean to indicate if the obj was removed
-	 * @param obj to be removed on the first appereance on the SCDLL
+	/**
+	 * @return current size
+	 */
+	@Override
+	public int size() {
+		return currentSize;
+	}
+
+	/** Remove method to remove first instance obj
+	 * @return if the obj was removed
+	 * @param obj to be removed
 	 */
 	@Override
 	public boolean remove(E obj) {
-		if (obj == null){
-			throw new IllegalArgumentException("Will/Cannot not add null argument.");
-		}
-		Node temp = null;
-		for (temp = header.getNext(); temp != null; temp = temp.getNext()){
-			if (temp.getValue().equals(obj)){
-				// found first copy
-				if (temp.getNext() != null){
-					temp.getNext().setPrev(temp.getPrev());
-				}
+		if(obj == null)
+			throw new IllegalArgumentException("Parameter cannot be null");
+
+		for(Node temp = header.getNext(); temp.getValue() != null; temp = temp.getNext()){
+			if(obj.compareTo(temp.getValue())==0){
 				temp.getPrev().setNext(temp.getNext());
-				temp.setValue(null);
+				temp.getNext().setPrev(temp.getPrev());
 				temp.setNext(null);
 				temp.setPrev(null);
-				this.currentsize--;
+				temp.setValue(null);
+				currentSize--;
 				return true;
 			}
 		}
 		return false;
 	}
-	
 
-	/** Remove an element at an specific index
+	/** Remove an element at a specified index
 	 * @param int index to be removed
 	 * @return return boolean if value is removed or not
 	 */
 	@Override
 	public boolean remove(int index) {
-		if ((index < 0) || (index >= this.size())){
+		if((index < 0) || (index > this.currentSize))
 			throw new IndexOutOfBoundsException();
+
+		int i = 0;
+		for(Node temp = header.getNext(); temp.getValue()!=null; temp = temp.getNext(), i++){
+			if(index == i){
+				temp.getPrev().setNext(temp.getNext());
+				temp.getNext().setPrev(temp.getPrev());
+				temp.setNext(null);
+				temp.setPrev(null);
+				temp.setValue(null);
+				currentSize--;
+				return true;
+			}
 		}
-		
-		Node temp = null;
-		int counter = 0;
-		for (temp = header.getNext(); counter < index; temp = temp.getNext(), counter++);
-		if (temp.getNext() != null){
-			// i am not at the end of list
-			temp.getNext().setPrev(temp.getPrev()); // null if temp is the last one
-		}
-		temp.getPrev().setNext(temp.getNext());
-		temp.setValue(null);
-		temp.setNext(null);
-		temp.setPrev(null);
-		this.currentsize--;
-		return true;
+		return false;
 	}
+
 	/**
-	 * @return currentSize of SCDLL
-	 * 
-	 * 
-	 * */
-	@Override
-	public int size() {
-		return this.currentsize;
-	}
-	/**
-	 * Remove all obj objects from the SCDLL
+	 * Remove all repetions of an specific object
 	 * @param E obj to be remove
 	 * @return int removed count
 	 */
@@ -262,125 +261,139 @@ public class SortedCircularDoublyLinkedList<E extends Comparable<E>> implements 
 		}
 		return counter;
 	}
+
 	/**First element of SCDLL
-	 * @return E value of the first node of the DLL
+	 * @return E value of the first node of the SCDLL
 	 */
 	@Override
 	public E first() {
-		if (this.isEmpty()){
+		if(isEmpty())
 			return null;
-		}
-		else {
-			return header.getNext().getValue();
-		}
+		return header.getNext().getValue();
 	}
 	/** Last element of the SCDLL
-	 * @return E value of the last node of the DLL
+	 * @return E value of the last node of the SCDLL
 	 */
 	@Override
 	public E last() {
-		if(this.isEmpty())
+		if(isEmpty())
 			return null;
-		else{
-			return header.getPrev().getValue();
-		}
+		return header.getPrev().getValue();
 	}
+
 	/**Get an specific node on the DLL
 	 * @param index node to be returned
 	 * @return E element at the specific node
 	 */
 	@Override
 	public E get(int index) {
-		if ((index < 0) || (index >= this.size())){
+		if((index<0)||(index>this.currentSize)){
 			throw new IndexOutOfBoundsException();
 		}
-		Node temp=null;
-		int counter=0;
-		for(temp=header.getNext();index < counter;temp=temp.getNext(),counter++);
-		return temp.getValue();
+
+		int counter = 0;
+		for(Node temp = header.getNext(); temp.getValue()!=null; temp = temp.getNext(), counter++){
+			if(counter == index)
+				return temp.getValue();	
+		}
+
+		return null;
 	}
-		/**
-		 * Clear the SCDLL of all objects
-		 * 
-		 * **/
+	/**Clear the whole SCDLL
+	 * 
+	 */
 	@Override
 	public void clear() {
-		while (!this.isEmpty()){
+		while(!this.isEmpty()){
 			this.remove(0);
-		}		
+		}
 	}
-	/** Verify if an object E is in the SCDLL
+
+	/** Verify if a element is on the SCDLL or not
 	 * @param E element to compare
-	 * @return if it is on the SCDLL or not
+	 * @return if it is on the DLL or not
 	 */
 	@Override
 	public boolean contains(E e) {
-		return this.firstIndex(e) >= 0;
+		for(Node temp = header.getNext(); temp.getValue()!=null; temp = temp.getNext()){
+			if(temp.getValue().compareTo(e)==0){
+				return true;
+			}
+		}
+
+		return false;
 	}
+
 	/**Verify if the SCDLL is empty or not
-	 * @return true if empty, false otherwise
+	 * @return boolean size == 0
 	 */
 	@Override
 	public boolean isEmpty() {
-		return this.size()==0;
+		if(currentSize == 0){
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
-	
-	/**fistIndex of the parameter at the SCDLL
+
+	/**Index iterator
+	 *@param int index to start interation
+	 */
+
+	@Override
+	public Iterator<E> iterator(int index) {
+		return new ListIterator(index);
+	}
+
+	/**fistIndex of the parameter at the DLL
 	 * @param element to verify its first index
-	 * return int the first index of the parameter
+	 * return int the first index of the @param
 	 */
 
 	@Override
 	public int firstIndex(E e) {
-		if (e == null){
-			throw new IllegalArgumentException("Parameter cannot be null.");
-		}
-		else {
-			int counter = 0;
-			Node temp = null;
-			for (temp = header.getNext(); temp != null; temp = temp.getNext(), counter++){
-				if (temp.getValue().equals(e)){
-					return counter;
-				}
+		int counter = 0;
+		for(Node temp = header.getNext(); temp.getValue()!= null; temp = temp.getNext(),counter++){
+			if(e.compareTo(temp.getValue())==0){
+				return counter;
 			}
-			return -1;
 		}
+
+		return -1;
 	}
-	/**lastIndex of the parameter object of the SCDLL
+
+	/**lastIndex of the paramter at the DLL
 	 * @param element ot verify its last index on the 
 	 */
 	@Override
 	public int lastIndex(E e) {
-		if (e == null){
-			throw new IllegalArgumentException("Parameter cannot be null.");
-		}
-		else {
-			int counter =0, lastSeen = -1;
-			Node temp = null;
-			for (temp = header.getNext(); temp != null; temp = temp.getNext(), counter++){
-				if (temp.getValue().equals(e)){
-					lastSeen = counter;
-				}
+		int counter = currentSize-1;
+		for(Node temp = header.getPrev(); temp.getValue()!= null; temp = temp.getPrev(),counter--){
+			if(e.compareTo(temp.getValue())==0){
+				return counter;
 			}
-			return lastSeen;
 		}
+
+		return -1;
+	}
+
+	/**
+	 * reverse iterator of the DLL
+	 */
+	@Override
+	public ReverseIterator<E> reverseIterator() {
+		return new ReverseListIterator();
 	}
 	
 	/**
-	 * toString method to show the Elements contained in the SCDLL in string format.
-	 * 
-	 * 
-	 * 
-	 * 
-	 * */
+	 * ReverseIterator from an specific index
+	 * @param int index for starting the iteration
+	 */
 	@Override
-	public String toString(){
-		String result="";
-		for(Node temp=this.header.getNext();temp.getValue()!=null;temp=temp.getNext())
-		{
-			result=result+temp.getValue()+" ";
-		}
-		return result;
-	}
+	public ReverseIterator<E> reverseIterator(int index) {
+		return new ReverseListIterator(index);
+	}	
 
+	
 }

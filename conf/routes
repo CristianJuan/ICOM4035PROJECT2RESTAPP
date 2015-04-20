@@ -36,6 +36,3 @@ PUT		/gem/:id					controllers.GemController.updateGem(id: Long)
 
 #Remove Gem
 DELETE	/gem/:id					controllers.GemController.deleteGem(id: Long)
-
-
-
